@@ -1,6 +1,8 @@
 [package]
 name = "merkle-tree"
 version = "0.1.0"
-authors = ["semio"]
+authors = ["semion.ababo@gmail.com"]
 
 [dependencies]
+sha2 = "0.4.2"
+digest = "0.4.0"
