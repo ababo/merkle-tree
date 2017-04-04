@@ -1,6 +1,7 @@
 use digest::Digest;
 use generic_array::GenericArray;
 use std::collections::BTreeSet;
+use std::mem::swap;
 
 // To achieve proper efficiency it would be better to divide this functionality
 // into two parts: MerkleTreeGenerator and MerkleTree. The last one should
@@ -54,6 +55,33 @@ impl<T: Digest+Default+Clone> MerkleTree<T> {
     }
 
     pub fn seal(&mut self) {
+        let src = &mut self.leaves.iter().map(|v| {
+            let mut digest =T::default();
+            digest.input(v);
+            digest
+        }).collect::<Vec<T>>();
+        let dst = &mut Vec::<T>::new();
 
+        for _ in 0..self.height() - 1 {
+            for i in 0..src.len() / 2 {
+                let mut digest =T::default();
+                digest.input(src[2 * i].clone().result().as_slice());
+                digest.input(src[2 * i + 1].clone().result().as_slice());
+                dst.push(digest);
+            }
+
+            if src.len() % 2 == 1 {
+                dst.push(src[src.len() - 1].clone());
+            }
+
+            swap(dst, src);
+            dst.clear();
+        }
+
+        self.root = Some(if dst.len() != 0 {
+            dst[0].clone()
+        } else {
+            T::default()
+        });
     }
 }
