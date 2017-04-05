@@ -50,6 +50,16 @@ impl<T: Digest+Default+Clone> MerkleTree<T> {
         self.leaves.contains(&vec)
     }
 
+    pub fn blocks(&self) -> Vec<GenericArray<u8, T::OutputSize>> {
+        // a bit of golang-style because of lacking FromIterator support
+        let mut result = Vec::<GenericArray<u8, T::OutputSize>>::new();
+        for h in self.leaves.iter() {
+            let ga = GenericArray::<u8, T::OutputSize>::clone_from_slice(&h);
+            result.push(ga);
+        }
+        result
+    }
+
     pub fn add_block(&mut self, hash: GenericArray<u8, T::OutputSize>) {
         let vec = hash.iter().cloned().collect();
         self.leaves.insert(vec);
@@ -79,8 +89,8 @@ impl<T: Digest+Default+Clone> MerkleTree<T> {
             dst.clear();
         }
 
-        self.root = Some(if dst.len() != 0 {
-            dst[0].clone()
+        self.root = Some(if src.len() != 0 {
+            src[0].clone()
         } else {
             T::default()
         });

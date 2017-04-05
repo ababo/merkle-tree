@@ -64,6 +64,6 @@ mod tests {
         assert!(tree.is_sealed());
 
         assert_eq!(format!("{:X}", tree.root_hash()),
-            "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855");
+            "42566FFE6175DF657034EB9ED55C955DA177769179991A1A08DCE7CAC0800742");
     }
 }
