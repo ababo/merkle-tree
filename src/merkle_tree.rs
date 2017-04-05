@@ -3,18 +3,19 @@ use generic_array::GenericArray;
 use std::collections::BTreeSet;
 use std::mem::swap;
 
-// To achieve proper efficiency it would be better to divide this functionality
-// into two parts: MerkleTreeGenerator and MerkleTree. The last one should
-// contain a sorted slice instead of expensive BTreeSet.
+// In the following code I implement a single struct which uses BTreeSet for
+// block ordering. But for production it would be better to divide this struct
+// into two parts: MerkleTreeGenerator and MerkleTree. In that case the last
+// one should contain a sorted slice instead of expensive BTreeSet.
 
 #[derive(Default)]
 pub struct MerkleTree<T: Digest> {
-    // It would be better to use generic_array::GenericArray<u8, T::OutputSize>
-    // instead, but unfortunately it doesn't implement std::cmp::Ord. Let's
-    // omit writing a wrapping type or forking that repo for simplicity.
+    // It's better to use GenericArray<u8, T::OutputSize> instead of Vec<u8>,
+    // but unfortunately it doesn't implement Ord. Let's omit writing a
+    // wrapping type or forking that repo for simplicity.
     leaves: BTreeSet<Vec<u8>>,
-    // Would be better to use GenericArray<u8, T::OutputSize> instead of T
-    // if it implemented std::default::Default.
+    // It would be better to use GenericArray<u8, T::OutputSize> instead of T,
+    // but the first doesn't implement Default.
     root: Option<T>,
 }
 
